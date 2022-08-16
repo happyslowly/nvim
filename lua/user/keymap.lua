@@ -5,9 +5,9 @@ local keymap = vim.keymap.set
 vim.g.mapleader = " "
 
 keymap("n", "<F3>", ":NvimTreeToggle<Cr>", opts)
-keymap("n", "<Leader>Y", '"+y', opts)
-keymap("n", "<Leader>P", '"+p', opts)
-keymap("n", "<Leader>A", "ggVG", opts)
+keymap({ "n", "x" }, "<Leader>y", '"+y', opts)
+keymap("n", "<Leader>p", '"+p', opts)
+keymap("n", "<Leader>a", "ggVG", opts)
 
 keymap(
     "n",
