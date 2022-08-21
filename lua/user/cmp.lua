@@ -7,9 +7,9 @@ cmp.setup({
         end,
     },
     sources = cmp.config.sources({
-        { name = "nvim_lsp", keyword_length = 3 },
+        { name = "nvim_lsp", keyword_length = 2 },
         { name = "path" },
-        { name = "buffer", keyword_length = 3 },
+        { name = "buffer", keyword_length = 2 },
     }),
     window = {
         documentation = cmp.config.window.bordered(),

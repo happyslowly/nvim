@@ -30,7 +30,11 @@ o.wrap = false
 
 -- indent
 o.expandtab = true
-o.shiftwidth = 4
+o.shiftwidth = 2
 o.smartindent = true
-o.softtabstop = 4
-o.tabstop = 4
+o.softtabstop = 2
+o.tabstop = 2
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "python",
+    command = "setlocal shiftwidth=4 softtabstop=4 tabstop=4",
+})
