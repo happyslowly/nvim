@@ -7,6 +7,8 @@ require("null-ls").setup({
             extra_args = { "--config-path=" .. vim.fn["stdpath"]("config") .. "/stylua.toml" },
         }),
         null_ls.builtins.formatting.black,
+        null_ls.builtins.formatting.jq,
+        null_ls.builtins.formatting.shfmt,
         -- null_ls.builtins.formatting.clang_format,
     },
     on_attach = function(client, bufnr)

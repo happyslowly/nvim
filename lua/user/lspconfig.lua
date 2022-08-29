@@ -61,13 +61,7 @@ local lsp_flags = {
 
 local capabilities = require("cmp_nvim_lsp").update_capabilities(vim.lsp.protocol.make_client_capabilities())
 
--- require("lspconfig")["pyright"].setup({
---     on_attach = on_attach,
---     flags = lsp_flags,
---     capabilities = capabilities,
--- })
-
-require("lspconfig")["jedi_language_server"].setup({
+require("lspconfig")["pyright"].setup({
     on_attach = on_attach,
     flags = lsp_flags,
     capabilities = capabilities,
@@ -124,6 +118,12 @@ require("lspconfig")["rust_analyzer"].setup({
 })
 
 require("lspconfig").clangd.setup({
+    on_attach = on_attach,
+    flags = lsp_flags,
+    capabilities = capabilities,
+})
+
+require("lspconfig").bashls.setup({
     on_attach = on_attach,
     flags = lsp_flags,
     capabilities = capabilities,
