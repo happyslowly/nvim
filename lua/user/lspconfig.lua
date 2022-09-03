@@ -1,6 +1,5 @@
 -- LSP UI
 vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { border = "rounded" })
-
 vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = "rounded" })
 
 local signs = { Error = "✘", Warn = "▲", Hint = "⚑", Info = "" }
@@ -29,7 +28,6 @@ vim.keymap.set("n", "<Leader>q", vim.diagnostic.setloclist, opts)
 
 -- Use an on_attach function to only map the following keys
 -- after the language server attaches to the current buffer
-local augroup = vim.api.nvim_create_augroup("LspConfigFormatting", {})
 -- create on_attach function
 local attach = function(format)
     return function(client, bufnr)
@@ -57,6 +55,7 @@ local attach = function(format)
 
         -- if format and client.supports_method("textDocument/formatting") then
         if format then
+            local augroup = vim.api.nvim_create_augroup("LspConfigFormatting", {})
             vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
             vim.api.nvim_create_autocmd("BufWritePre", {
                 group = augroup,
@@ -156,6 +155,7 @@ require("lspconfig").jdtls.setup({
 local metals_config = require("metals").bare_config()
 metals_config.settings = {
     showImplicitArguments = true,
+    showInferredType = true,
 }
 metals_config.capabilities = capabilities
 metals_config.on_attach = attach(true)

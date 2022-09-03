@@ -15,6 +15,13 @@ return require("packer").startup(function(use)
     use({
         "kyazdani42/nvim-tree.lua",
         requires = { "kyazdani42/nvim-web-devicons" },
+        config = function()
+            require("nvim-tree").setup({
+                view = {
+                    side = "right",
+                },
+            })
+        end,
     })
 
     use("numToStr/Comment.nvim")
@@ -33,9 +40,9 @@ return require("packer").startup(function(use)
     use({
         "hrsh7th/nvim-cmp",
         requires = {
-            "hrsh7th/cmp-cmdline",
+            -- "hrsh7th/cmp-cmdline",
             "hrsh7th/cmp-buffer",
-            "hrsh7th/cmp-nvim-lua",
+            -- "hrsh7th/cmp-nvim-lua",
             "hrsh7th/cmp-nvim-lsp",
             "hrsh7th/cmp-path",
         },
@@ -50,8 +57,6 @@ return require("packer").startup(function(use)
         end,
         requires = { "nvim-lua/plenary.nvim" },
     })
-
-    use({ "ellisonleao/glow.nvim" })
 
     use({
         "scalameta/nvim-metals",
