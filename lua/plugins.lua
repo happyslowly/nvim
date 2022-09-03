@@ -15,6 +15,13 @@ return require("packer").startup(function(use)
     use({
         "kyazdani42/nvim-tree.lua",
         requires = { "kyazdani42/nvim-web-devicons" },
+        config = function()
+            require("nvim-tree").setup({
+                view = {
+                    side = "right",
+                },
+            })
+        end,
     })
 
     use("numToStr/Comment.nvim")
@@ -50,8 +57,6 @@ return require("packer").startup(function(use)
         end,
         requires = { "nvim-lua/plenary.nvim" },
     })
-
-    use({ "ellisonleao/glow.nvim" })
 
     use({
         "scalameta/nvim-metals",
