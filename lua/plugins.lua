@@ -52,4 +52,9 @@ return require("packer").startup(function(use)
     })
 
     use({ "ellisonleao/glow.nvim" })
+
+    use({
+        "scalameta/nvim-metals",
+        requires = { "nvim-lua/plenary.nvim" },
+    })
 end)
