@@ -29,44 +29,54 @@ vim.keymap.set("n", "<Leader>q", vim.diagnostic.setloclist, opts)
 -- Use an on_attach function to only map the following keys
 -- after the language server attaches to the current buffer
 -- create on_attach function
-local attach = function(format)
-    return function(client, bufnr)
-        -- Enable completion triggered by <c-x><c-o>
-        vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
-
-        -- Mappings.
-        -- See `:help vim.lsp.*` for documentation on any of the below functions
-        local bufopts = { noremap = true, silent = true, buffer = bufnr }
-        vim.keymap.set("n", "gD", vim.lsp.buf.declaration, bufopts)
-        vim.keymap.set("n", "gd", vim.lsp.buf.definition, bufopts)
-        vim.keymap.set("n", "K", vim.lsp.buf.hover, bufopts)
-        vim.keymap.set("n", "gi", vim.lsp.buf.implementation, bufopts)
-        vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, bufopts)
-        vim.keymap.set("n", "<Leader>wa", vim.lsp.buf.add_workspace_folder, bufopts)
-        vim.keymap.set("n", "<Leader>wr", vim.lsp.buf.remove_workspace_folder, bufopts)
-        vim.keymap.set("n", "<Leader>wl", function()
-            print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-        end, bufopts)
-        vim.keymap.set("n", "<Leader>D", vim.lsp.buf.type_definition, bufopts)
-        vim.keymap.set("n", "<Leader>rn", vim.lsp.buf.rename, bufopts)
-        vim.keymap.set("n", "<Leader>ca", vim.lsp.buf.code_action, bufopts)
-        vim.keymap.set("n", "gr", vim.lsp.buf.references, bufopts)
-        vim.keymap.set("n", "<Leader>f", vim.lsp.buf.formatting, bufopts)
-
-        -- if format and client.supports_method("textDocument/formatting") then
-        if format then
-            local augroup = vim.api.nvim_create_augroup("LspConfigFormatting", {})
-            vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
-            vim.api.nvim_create_autocmd("BufWritePre", {
-                group = augroup,
-                buffer = bufnr,
-                callback = function()
-                    -- on 0.8, you should use vim.lsp.buf.format({ bufnr = bufnr }) instead
-                    vim.lsp.buf.formatting_sync()
-                end,
-            })
+local attach = function(client, bufnr)
+    local function contains(list, x)
+        for _, v in pairs(list) do
+            if v == x then
+                return true
+            end
         end
+        return false
     end
+
+    local formatter = { "null-ls", "rust_analyzer", "jdtls", "metals" }
+    -- Enable completion triggered by <c-x><c-o>
+    vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
+
+    -- Mappings.
+    -- See `:help vim.lsp.*` for documentation on any of the below functions
+    local bufopts = { noremap = true, silent = true, buffer = bufnr }
+    vim.keymap.set("n", "gD", vim.lsp.buf.declaration, bufopts)
+    vim.keymap.set("n", "gd", vim.lsp.buf.definition, bufopts)
+    vim.keymap.set("n", "K", vim.lsp.buf.hover, bufopts)
+    vim.keymap.set("n", "gi", vim.lsp.buf.implementation, bufopts)
+    vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, bufopts)
+    vim.keymap.set("n", "<Leader>wa", vim.lsp.buf.add_workspace_folder, bufopts)
+    vim.keymap.set("n", "<Leader>wr", vim.lsp.buf.remove_workspace_folder, bufopts)
+    vim.keymap.set("n", "<Leader>wl", function()
+        print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+    end, bufopts)
+    vim.keymap.set("n", "<Leader>D", vim.lsp.buf.type_definition, bufopts)
+    vim.keymap.set("n", "<Leader>rn", vim.lsp.buf.rename, bufopts)
+    vim.keymap.set("n", "<Leader>ca", vim.lsp.buf.code_action, bufopts)
+    vim.keymap.set("n", "gr", vim.lsp.buf.references, bufopts)
+    vim.keymap.set("n", "<Leader>f", vim.lsp.buf.formatting, bufopts)
+
+    -- if format and client.supports_method("textDocument/formatting") then
+    local augroup = vim.api.nvim_create_augroup("LspConfigFormatting", {})
+    vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
+    vim.api.nvim_create_autocmd("BufWritePre", {
+        group = augroup,
+        buffer = bufnr,
+        callback = function()
+            vim.lsp.buf.format({
+                filter = function(client)
+                    return contains(formatter, client.name)
+                end,
+                bufnr = bufnr,
+            })
+        end,
+    })
 end
 
 -- LSP servers
@@ -78,13 +88,13 @@ local lsp_flags = {
 local capabilities = require("cmp_nvim_lsp").update_capabilities(vim.lsp.protocol.make_client_capabilities())
 
 require("lspconfig")["pyright"].setup({
-    on_attach = attach(false),
+    on_attach = attach,
     flags = lsp_flags,
     capabilities = capabilities,
 })
 
 require("lspconfig")["sumneko_lua"].setup({
-    on_attach = attach(false),
+    on_attach = attach,
     flags = lsp_flags,
     capabilities = capabilities,
     settings = {
@@ -110,7 +120,7 @@ require("lspconfig")["sumneko_lua"].setup({
 })
 
 require("lspconfig")["rust_analyzer"].setup({
-    on_attach = attach(true),
+    on_attach = attach,
     flags = lsp_flags,
     capabilities = capabilities,
     settings = {
@@ -134,19 +144,19 @@ require("lspconfig")["rust_analyzer"].setup({
 })
 
 require("lspconfig").clangd.setup({
-    on_attach = attach(false),
+    on_attach = attach,
     flags = lsp_flags,
     capabilities = capabilities,
 })
 
 require("lspconfig").bashls.setup({
-    on_attach = attach(false),
+    on_attach = attach,
     flags = lsp_flags,
     capabilities = capabilities,
 })
 
 require("lspconfig").jdtls.setup({
-    on_attach = attach(true),
+    on_attach = attach,
     flags = lsp_flags,
     capabilities = capabilities,
 })
@@ -158,7 +168,7 @@ metals_config.settings = {
     showInferredType = true,
 }
 metals_config.capabilities = capabilities
-metals_config.on_attach = attach(true)
+metals_config.on_attach = attach
 local nvim_metals_group = vim.api.nvim_create_augroup("nvim-metals", { clear = true })
 vim.api.nvim_create_autocmd("FileType", {
     pattern = { "scala", "sbt" },
