@@ -8,7 +8,7 @@ local get_settings = function(show_documenation)
             end,
         },
         sources = cmp.config.sources({
-            { name = "nvim_lsp", keyword_length = 2 },
+            { name = "nvim_lsp", keyword_length = 1 },
             { name = "path" },
             { name = "buffer", keyword_length = 2 },
         }),
