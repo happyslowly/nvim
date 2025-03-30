@@ -8,20 +8,22 @@ local lint = require("lint")
 vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { border = "rounded" })
 vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = "rounded" })
 
-local signs = { Error = "✗", Warn = "⚠", Hint = "➤", Info = "ℹ" }
-for type, icon in pairs(signs) do
-	local hl = "DiagnosticSign" .. type
-	vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
-end
-
 vim.diagnostic.config({
-	virtual_text = true,
+	virtual_lines = true,
 	underline = true,
 	update_in_insert = false,
 	severity_sort = false,
 	float = {
 		border = "rounded",
 		header = "",
+	},
+	signs = {
+		text = {
+			[vim.diagnostic.severity.ERROR] = "✗",
+			[vim.diagnostic.severity.WARN] = "⚠",
+			[vim.diagnostic.severity.INFO] = "➤",
+			[vim.diagnostic.severity.HINT] = "ℹ",
+		},
 	},
 })
 
@@ -33,7 +35,7 @@ vim.keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
 vim.keymap.set("n", "<Leader>q", vim.diagnostic.setloclist, opts)
 
 -- Common on_attach function for LSP servers
-local on_attach = function(client, bufnr)
+local on_attach = function(_, bufnr)
 	-- Enable completion triggered by <c-x><c-o>
 	vim.bo[bufnr].omnifunc = "v:lua.vim.lsp.omnifunc"
 
