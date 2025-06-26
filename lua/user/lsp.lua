@@ -3,6 +3,9 @@ local conform = require("conform")
 local mason = require("mason")
 local mason_lsp = require("mason-lspconfig")
 local lint = require("lint")
+local util = require("lspconfig.util")
+
+vim.lsp.set_log_level("debug")
 
 -- LSP UI
 vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { border = "rounded" })
@@ -109,16 +112,7 @@ mason_lsp.setup({
 			lspconfig.pyright.setup({
 				on_attach = on_attach,
 				capabilities = capabilities,
-				settings = {
-					python = {
-						analysis = {
-							typeCheckingMode = "basic",
-							autoSearchPaths = true,
-							diagnosticMode = "workspace",
-							useLibraryCodeForTypes = true,
-						},
-					},
-				},
+				root_dir = util.root_pattern("pyrightconfig.json", ".git"),
 			})
 		end,
 
@@ -134,6 +128,41 @@ mason_lsp.setup({
 						completion = true,
 					},
 				},
+			})
+		end,
+
+		["rust_analyzer"] = function()
+			lspconfig.rust_analyzer.setup({
+				capabilities = capabilities,
+
+				on_attach = function(client, bufnr)
+					on_attach(client, bufnr)
+					if client.server_capabilities.inlayHintProvider then
+						vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
+					end
+				end,
+
+				settings = {
+					["rust-analyzer"] = {
+						diagnostics = {
+							enable = true,
+						},
+						cargo = {
+							allFeatures = true,
+							buildScripts = { enable = true },
+						},
+						checkOnSave = true,
+						procMacro = { enable = true },
+
+						inlayHints = {
+							closingBraceHints = true,
+							parameterHints = true,
+							typeHints = { enable = true, hideClosureInitialization = false },
+						},
+					},
+				},
+
+				root_dir = util.root_pattern("Cargo.toml", "rust-project.json", ".git"),
 			})
 		end,
 	},
