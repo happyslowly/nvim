@@ -65,6 +65,63 @@ local on_attach = function(_, bufnr)
 	end, bufopts)
 end
 
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
+
+lspconfig.pyright.setup({
+	on_attach = on_attach,
+	capabilities = capabilities,
+	root_dir = util.root_pattern("pyrightconfig.json", ".git"),
+})
+
+lspconfig.rust_analyzer.setup({
+	capabilities = capabilities,
+
+	on_attach = function(client, bufnr)
+		on_attach(client, bufnr)
+		if client.server_capabilities.inlayHintProvider then
+			vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
+		end
+	end,
+
+	settings = {
+		["rust-analyzer"] = {
+			diagnostics = {
+				enable = true,
+			},
+			cargo = {
+				allFeatures = true,
+				buildScripts = { enable = true },
+			},
+			checkOnSave = true,
+			procMacro = { enable = true },
+
+			inlayHints = {
+				closingBraceHints = true,
+				parameterHints = true,
+				typeHints = { enable = true, hideClosureInitialization = false },
+			},
+		},
+	},
+
+	root_dir = util.root_pattern("Cargo.toml", "rust-project.json", ".git"),
+})
+
+lspconfig.lua_ls.setup({
+	on_attach = on_attach,
+	capabilities = capabilities,
+	settings = {
+		Lua = {
+			runtime = {
+				version = "LuaJIT",
+			},
+			diagnostics = {
+				globals = { "vim" },
+			},
+		},
+	},
+})
+
 mason.setup({
 	ui = {
 		icons = {
@@ -75,97 +132,15 @@ mason.setup({
 	},
 })
 
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
-
 mason_lsp.setup({
 	ensure_installed = {
 		"lua_ls",
 		"bashls",
 		"pyright",
 		"yamlls",
+		"vtsls",
 	},
 	automatic_installation = true,
-	handlers = {
-		function(server_name)
-			lspconfig[server_name].setup({
-				on_attach = on_attach,
-				capabilities = capabilities,
-			})
-		end,
-
-		["lua_ls"] = function()
-			lspconfig.lua_ls.setup({
-				on_attach = on_attach,
-				capabilities = capabilities,
-				settings = {
-					Lua = {
-						diagnostics = {
-							globals = { "vim" },
-						},
-					},
-				},
-			})
-		end,
-
-		["pyright"] = function()
-			lspconfig.pyright.setup({
-				on_attach = on_attach,
-				capabilities = capabilities,
-				root_dir = util.root_pattern("pyrightconfig.json", ".git"),
-			})
-		end,
-
-		["yamlls"] = function()
-			lspconfig.yamlls.setup({
-				settings = {
-					yaml = {
-						schemas = {
-							["https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.yaml"] = "openapi.yaml",
-						},
-						validate = true,
-						hover = true,
-						completion = true,
-					},
-				},
-			})
-		end,
-
-		["rust_analyzer"] = function()
-			lspconfig.rust_analyzer.setup({
-				capabilities = capabilities,
-
-				on_attach = function(client, bufnr)
-					on_attach(client, bufnr)
-					if client.server_capabilities.inlayHintProvider then
-						vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
-					end
-				end,
-
-				settings = {
-					["rust-analyzer"] = {
-						diagnostics = {
-							enable = true,
-						},
-						cargo = {
-							allFeatures = true,
-							buildScripts = { enable = true },
-						},
-						checkOnSave = true,
-						procMacro = { enable = true },
-
-						inlayHints = {
-							closingBraceHints = true,
-							parameterHints = true,
-							typeHints = { enable = true, hideClosureInitialization = false },
-						},
-					},
-				},
-
-				root_dir = util.root_pattern("Cargo.toml", "rust-project.json", ".git"),
-			})
-		end,
-	},
 })
 
 lint.linters_by_ft = {
@@ -186,11 +161,12 @@ conform.setup({
 		json = { "prettier" },
 		yaml = { "prettier" },
 		typescript = { "prettier" },
+		javascript = { "prettier" },
 		markdown = { "prettier" },
 		toml = { "taplo" },
 	},
 	format_on_save = {
-		timeout_ms = 500,
+		timeout_ms = 1000,
 		lsp_format = "fallback",
 	},
 })

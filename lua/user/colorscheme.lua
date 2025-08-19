@@ -10,4 +10,13 @@ require("lualine").setup({
 	},
 })
 
+require("github-theme").setup({
+	options = {
+		styles = {
+			comments = "italic",
+			keywords = "italic",
+			types = "italic,bold",
+		},
+	},
+})
 vim.cmd.colorscheme("github_dark_dimmed")
