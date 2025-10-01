@@ -5,7 +5,7 @@ local mason_lsp = require("mason-lspconfig")
 local lint = require("lint")
 local util = require("lspconfig.util")
 
-vim.lsp.set_log_level("debug")
+vim.lsp.set_log_level("error")
 
 -- LSP UI
 vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { border = "rounded" })
@@ -139,8 +139,11 @@ mason_lsp.setup({
 		"pyright",
 		"yamlls",
 		"vtsls",
+		"taplo",
 	},
-	automatic_installation = true,
+	automatic_enable = {
+		exclude = { "taplo" },
+	},
 })
 
 lint.linters_by_ft = {

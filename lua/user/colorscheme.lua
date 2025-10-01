@@ -6,17 +6,18 @@ o.termguicolors = true
 require("lualine").setup({
 	options = {
 		icons_enabled = true,
-		theme = "github_dark_dimmed",
+		theme = "nightfox",
 	},
 })
 
-require("github-theme").setup({
+require("nightfox").setup({
 	options = {
 		styles = {
 			comments = "italic",
-			keywords = "italic",
+			keywords = "bold",
 			types = "italic,bold",
 		},
 	},
 })
-vim.cmd.colorscheme("github_dark_dimmed")
+
+vim.cmd.colorscheme("nightfox")

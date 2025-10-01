@@ -13,7 +13,7 @@ vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
 	-- colorscheme
-	{ "projekt0n/github-nvim-theme", name = "github-theme" },
+	{ "EdenEast/nightfox.nvim", name = "nightfox" },
 	-- UI Widgets
 	{
 		"nvim-lualine/lualine.nvim",
@@ -23,7 +23,17 @@ require("lazy").setup({
 		"kyazdani42/nvim-tree.lua",
 		dependencies = { "kyazdani42/nvim-web-devicons" },
 		config = function()
-			require("nvim-tree").setup({})
+			require("nvim-tree").setup({
+				view = {
+					float = {
+						enable = true,
+						open_win_config = {
+							relative = "cursor",
+							width = 48,
+						},
+					},
+				},
+			})
 		end,
 	},
 
@@ -43,7 +53,6 @@ require("lazy").setup({
 		"neovim/nvim-lspconfig",
 	},
 	{ "mfussenegger/nvim-lint" },
-	{ "L3MON4D3/LuaSnip", lazy = true },
 	{
 		"hrsh7th/nvim-cmp",
 		dependencies = {
@@ -84,11 +93,5 @@ require("lazy").setup({
 				position = "top",
 			},
 		},
-	},
-	{
-		"coder/claudecode.nvim",
-		dependencies = { "folke/snacks.nvim" },
-		config = true,
-		lazy = false,
 	},
 })
