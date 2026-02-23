@@ -20,8 +20,8 @@ require("lazy").setup({
 		dependencies = { "nvim-tree/nvim-web-devicons" },
 	},
 	{
-		"kyazdani42/nvim-tree.lua",
-		dependencies = { "kyazdani42/nvim-web-devicons" },
+		"nvim-tree/nvim-tree.lua",
+		dependencies = { "nvim-tree/nvim-web-devicons" },
 		config = function()
 			require("nvim-tree").setup({
 				view = {
@@ -38,7 +38,7 @@ require("lazy").setup({
 	},
 
 	-- Editing
-	{ "numToStr/Comment.nvim" },
+	{ "numToStr/Comment.nvim", opts = {} },
 	{
 		"windwp/nvim-autopairs",
 		config = function()
@@ -52,7 +52,15 @@ require("lazy").setup({
 		"williamboman/mason-lspconfig.nvim",
 		"neovim/nvim-lspconfig",
 	},
+	{ "folke/lazydev.nvim", ft = "lua", opts = {} },
 	{ "mfussenegger/nvim-lint" },
+	{
+		"L3MON4D3/LuaSnip",
+		dependencies = { "rafamadriz/friendly-snippets" },
+		config = function()
+			require("luasnip.loaders.from_vscode").lazy_load()
+		end,
+	},
 	{
 		"hrsh7th/nvim-cmp",
 		dependencies = {
@@ -61,6 +69,7 @@ require("lazy").setup({
 			"hrsh7th/cmp-nvim-lua",
 			"hrsh7th/cmp-nvim-lsp",
 			"hrsh7th/cmp-path",
+			"saadparwaiz1/cmp_luasnip",
 		},
 	},
 	{ "stevearc/conform.nvim", opts = {} },
@@ -87,11 +96,12 @@ require("lazy").setup({
 			},
 			lang = "python3",
 			plugins = {
-				non_standalone = true,
+				non_standalone = false,
 			},
 			description = {
 				position = "top",
 			},
+			debug = true,
 		},
 	},
 })

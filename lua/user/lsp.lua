@@ -1,21 +1,17 @@
-local lspconfig = require("lspconfig")
 local conform = require("conform")
 local mason = require("mason")
 local mason_lsp = require("mason-lspconfig")
 local lint = require("lint")
-local util = require("lspconfig.util")
+
+local lspconfig = vim.lsp.config
 
 vim.lsp.set_log_level("error")
-
--- LSP UI
-vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { border = "rounded" })
-vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = "rounded" })
 
 vim.diagnostic.config({
 	virtual_lines = true,
 	underline = true,
 	update_in_insert = false,
-	severity_sort = false,
+	severity_sort = true,
 	float = {
 		border = "rounded",
 		header = "",
@@ -33,14 +29,23 @@ vim.diagnostic.config({
 -- LSP keymaps
 local opts = { noremap = true, silent = true }
 vim.keymap.set("n", "<Leader>e", vim.diagnostic.open_float, opts)
-vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, opts)
-vim.keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
+vim.keymap.set("n", "[d", function()
+	vim.diagnostic.jump({ count = -1, float = true })
+end, opts)
+vim.keymap.set("n", "]d", function()
+	vim.diagnostic.jump({ count = 1, float = true })
+end, opts)
 vim.keymap.set("n", "<Leader>q", vim.diagnostic.setloclist, opts)
 
 -- Common on_attach function for LSP servers
-local on_attach = function(_, bufnr)
+local on_attach = function(client, bufnr)
 	-- Enable completion triggered by <c-x><c-o>
 	vim.bo[bufnr].omnifunc = "v:lua.vim.lsp.omnifunc"
+
+	-- Enable inlay hints if supported
+	if client.server_capabilities.inlayHintProvider then
+		vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
+	end
 
 	-- Mappings.
 	-- See `:help vim.lsp.*` for documentation on any of the below functions
@@ -68,22 +73,14 @@ end
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
 
-lspconfig.pyright.setup({
+lspconfig("pyright", {
 	on_attach = on_attach,
 	capabilities = capabilities,
-	root_dir = util.root_pattern("pyrightconfig.json", ".git"),
 })
 
-lspconfig.rust_analyzer.setup({
+lspconfig("rust_analyzer", {
 	capabilities = capabilities,
-
-	on_attach = function(client, bufnr)
-		on_attach(client, bufnr)
-		if client.server_capabilities.inlayHintProvider then
-			vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
-		end
-	end,
-
+	on_attach = on_attach,
 	settings = {
 		["rust-analyzer"] = {
 			diagnostics = {
@@ -95,7 +92,6 @@ lspconfig.rust_analyzer.setup({
 			},
 			checkOnSave = true,
 			procMacro = { enable = true },
-
 			inlayHints = {
 				closingBraceHints = true,
 				parameterHints = true,
@@ -103,11 +99,9 @@ lspconfig.rust_analyzer.setup({
 			},
 		},
 	},
-
-	root_dir = util.root_pattern("Cargo.toml", "rust-project.json", ".git"),
 })
 
-lspconfig.lua_ls.setup({
+lspconfig("lua_ls", {
 	on_attach = on_attach,
 	capabilities = capabilities,
 	settings = {
@@ -120,6 +114,11 @@ lspconfig.lua_ls.setup({
 			},
 		},
 	},
+})
+
+lspconfig("clangd", {
+	on_attach = on_attach,
+	capabilities = capabilities,
 })
 
 mason.setup({
@@ -148,6 +147,9 @@ mason_lsp.setup({
 
 lint.linters_by_ft = {
 	bash = { "shellcheck" },
+	-- python = { "ruff" },  -- Disabled for now
+	javascript = { "eslint" },
+	typescript = { "eslint" },
 }
 
 vim.api.nvim_create_autocmd({ "BufWritePost", "BufEnter" }, {
@@ -167,6 +169,8 @@ conform.setup({
 		javascript = { "prettier" },
 		markdown = { "prettier" },
 		toml = { "taplo" },
+		cpp = { "clang-format" },
+		c = { "clang-format" },
 	},
 	format_on_save = {
 		timeout_ms = 1000,

@@ -1,14 +1,13 @@
 local o = vim.o
 
-o.autochdir = true
+-- o.autochdir = true  -- Disabled: can interfere with LSP root detection
 o.autoread = true
 o.backspace = "indent,eol,start"
 o.backup = false
 o.colorcolumn = "80"
 o.complete = ".,t,d,i"
-o.completeopt = "menu,menuone"
+o.completeopt = "menu,menuone,noselect"
 o.cursorline = true
-o.encoding = "utf-8"
 o.expandtab = true
 o.fileformats = "unix"
 o.foldenable = false
@@ -32,6 +31,13 @@ o.tabstop = 2
 o.wildmenu = true
 o.winborder = "rounded"
 o.wrap = false
+
+-- Modern additions
+o.updatetime = 250
+o.timeoutlen = 300
+o.undofile = true
+o.scrolloff = 8
+o.sidescrolloff = 8
 
 -- File type settings
 vim.api.nvim_create_autocmd("FileType", {
