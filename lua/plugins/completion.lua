@@ -1,3 +1,17 @@
+vim.pack.add({
+	"https://github.com/L3MON4D3/LuaSnip",
+	"https://github.com/rafamadriz/friendly-snippets",
+	"https://github.com/hrsh7th/nvim-cmp",
+	"https://github.com/hrsh7th/cmp-cmdline",
+	"https://github.com/hrsh7th/cmp-buffer",
+	"https://github.com/hrsh7th/cmp-nvim-lua",
+	"https://github.com/hrsh7th/cmp-nvim-lsp",
+	"https://github.com/hrsh7th/cmp-path",
+	"https://github.com/saadparwaiz1/cmp_luasnip",
+}, { confirm = false })
+
+require("luasnip.loaders.from_vscode").lazy_load()
+
 local cmp = require("cmp")
 local luasnip = require("luasnip")
 
@@ -17,17 +31,12 @@ cmp.setup({
 		completion = cmp.config.window.bordered(),
 		documentation = cmp.config.window.bordered(),
 	},
-	experimental = {
-		ghost_text = true,
-	},
+	experimental = { ghost_text = true },
 	mapping = cmp.mapping.preset.insert({
 		["<C-d>"] = cmp.mapping.scroll_docs(-4),
 		["<C-f>"] = cmp.mapping.scroll_docs(4),
 		["<C-Space>"] = cmp.mapping.complete(),
-		["<CR>"] = cmp.mapping.confirm({
-			behavior = cmp.ConfirmBehavior.Replace,
-			select = true,
-		}),
+		["<CR>"] = cmp.mapping.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = true }),
 		["<Tab>"] = cmp.mapping(function(fallback)
 			if cmp.visible() then
 				cmp.select_next_item()
@@ -49,22 +58,5 @@ cmp.setup({
 	}),
 })
 
-cmp.setup.filetype({ "rust", "scala" }, {
-	window = {
-		documentation = false,
-	},
-})
-
--- Cmdline completion
-cmp.setup.cmdline(":", {
-	sources = {
-		{ name = "cmdline" },
-		{ name = "path" },
-	},
-})
-
-cmp.setup.cmdline("/", {
-	sources = {
-		{ name = "buffer" },
-	},
-})
+cmp.setup.cmdline(":", { sources = { { name = "cmdline" }, { name = "path" } } })
+cmp.setup.cmdline("/", { sources = { { name = "buffer" } } })

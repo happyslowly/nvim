@@ -1,8 +1,4 @@
+vim.loader.enable()
+
+require("config")
 require("plugins")
-require("user.options")
-require("user.colorscheme")
-require("user.keymap")
-require("user.treesitter")
-require("user.cmp")
-require("user.lsp")
-require("user.neovide")
