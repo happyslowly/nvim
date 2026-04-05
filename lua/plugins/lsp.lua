@@ -3,12 +3,7 @@ vim.pack.add({
 	"https://github.com/williamboman/mason-lspconfig.nvim",
 	"https://github.com/neovim/nvim-lspconfig",
 	"https://github.com/folke/lazydev.nvim",
-	"https://github.com/mfussenegger/nvim-lint",
-	"https://github.com/stevearc/conform.nvim",
 }, { confirm = false })
-
-local conform = require("conform")
-local lint = require("lint")
 
 require("lazydev").setup({})
 
@@ -69,13 +64,9 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		vim.keymap.set("n", "<Leader>rn", vim.lsp.buf.rename, bufopts)
 		vim.keymap.set("n", "<Leader>ca", vim.lsp.buf.code_action, bufopts)
 		vim.keymap.set("n", "gr", vim.lsp.buf.references, bufopts)
-		vim.keymap.set("n", "<Leader>f", function()
-			conform.format()
-		end, bufopts)
 	end,
 })
 
-vim.lsp.config("pyright", {})
 vim.lsp.config("rust_analyzer", {
 	settings = {
 		["rust-analyzer"] = {
@@ -91,15 +82,14 @@ vim.lsp.config("rust_analyzer", {
 		},
 	},
 })
+
 vim.lsp.config("lua_ls", {
 	settings = {
 		Lua = {
 			runtime = { version = "LuaJIT" },
-			diagnostics = { globals = { "vim" } },
 		},
 	},
 })
-vim.lsp.config("clangd", {})
 
 require("mason").setup({
 	ui = {
@@ -110,33 +100,4 @@ require("mason").setup({
 require("mason-lspconfig").setup({
 	ensure_installed = { "lua_ls", "bashls", "pyright", "yamlls", "vtsls", "taplo" },
 	automatic_enable = { exclude = { "taplo" } },
-})
-
-lint.linters_by_ft = {
-	bash = { "shellcheck" },
-	javascript = { "eslint" },
-	typescript = { "eslint" },
-}
-
-vim.api.nvim_create_autocmd({ "BufWritePost", "BufEnter" }, {
-	callback = function()
-		lint.try_lint()
-	end,
-})
-
-conform.setup({
-	formatters_by_ft = {
-		bash = { "shfmt" },
-		lua = { "stylua" },
-		python = { "isort", "black" },
-		json = { "prettier" },
-		yaml = { "prettier" },
-		typescript = { "prettier" },
-		javascript = { "prettier" },
-		markdown = { "prettier" },
-		toml = { "taplo" },
-		cpp = { "clang-format" },
-		c = { "clang-format" },
-	},
-	format_on_save = { timeout_ms = 1000, lsp_format = "fallback" },
 })
