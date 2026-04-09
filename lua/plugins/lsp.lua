@@ -22,7 +22,7 @@ vim.diagnostic.config({
 })
 
 local opts = { noremap = true, silent = true }
-vim.keymap.set("n", "<Leader>e", vim.diagnostic.open_float, opts)
+vim.keymap.set("n", "<Leader>d", vim.diagnostic.open_float, opts)
 vim.keymap.set("n", "[d", function()
 	vim.diagnostic.jump({ count = -1, float = true })
 end, opts)
