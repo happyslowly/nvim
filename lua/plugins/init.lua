@@ -1,4 +1,5 @@
 require("plugins.interface")
+require("plugins.aerial")
 require("plugins.telescope")
 require("plugins.completion")
 require("plugins.lsp")
