@@ -19,6 +19,9 @@ vim.cmd.colorscheme("nightfox")
 
 require("lualine").setup({
 	options = { icons_enabled = true, theme = "nightfox" },
+	sections = {
+		lualine_c = { { "filename", path = 1 } },
+	},
 })
 
 require("nvim-tree").setup({
